@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Update game</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Sports competitions scheduler</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
+                aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" th:href="@{/games}">Games</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" th:href="@{/teams}">Teams</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+<div th:if="${game != null}">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-auto mt-3">
+                <h1>Update game</h1>
+                <form th:action="@{/games/update/{id}(id=${game.id})}" th:object="${game}" th:method="POST">
+                    <div class="mb-3">
+                        <div th:if="${#fields.hasErrors('beginningDateTime')}">
+                            <label for="beginningDateTime-invalid"></label>
+                            <input type="datetime-local" th:field="*{beginningDateTime}" id="beginningDateTime-invalid"
+                                   class="form-control is-invalid"/>
+                            <div th:errors="*{beginningDateTime}" class="invalid-feedback">Beginning date-time error
+                            </div>
+                        </div>
+                        <div th:unless="${#fields.hasErrors('beginningDateTime')}">
+                            <label for="beginningDateTime"></label>
+                            <input type="datetime-local" th:field="*{beginningDateTime}" id="beginningDateTime"
+                                   class="form-control"/>
+                        </div>
+                    </div>
+                    <table class="table table-dark table-striped table-bordered w-auto">
+                        <tr>
+                            <th>№</th>
+                            <th>Team</th>
+                            <th>Score</th>
+                        </tr>
+                        <tr th:each="i : ${#numbers.sequence(1, teamsAmount)}">
+                            <td>
+                                <span th:text="${i}"></span>
+                            </td>
+                            <td>
+                                <label th:if="${#fields.hasErrors('beginningDateTime')}">
+                                    <select name="teamsIds" class="form-select">
+                                        <option th:each="t : ${allTeams}"
+                                                th:value="${t.id}"
+                                                th:text="${t.name}"
+                                                th:selected="${t.id == teamsIdsInvalid.get(iStat.index)}">
+                                        </option>
+                                    </select>
+                                </label>
+                                <label th:unless="${#fields.hasErrors('beginningDateTime')}">
+                                    <span th:if="${iStat.index < game.gameResultList.size}">
+                                        <select name="teamsIds" class="form-select">
+                                            <option th:each="t : ${allTeams}"
+                                                    th:value="${t.id}"
+                                                    th:text="${t.name}"
+                                                    th:selected="${t.id == game.gameResultList.get(iStat.index).teamId}">
+                                            </option>
+                                        </select>
+                                    </span>
+                                    <span th:unless="${iStat.index < game.gameResultList.size}">
+                                        <select name="teamsIds" class="form-select">
+                                            <option th:each="t : ${allTeams}"
+                                                    th:value="${t.id}"
+                                                    th:text="${t.name}">
+                                            </option>
+                                        </select>
+                                    </span>
+                                </label>
+                            </td>
+                            <td>
+                                <label th:if="${#fields.hasErrors('beginningDateTime')}">
+                                    <input type="number" name="teamsScores"
+                                           th:value="${teamsScoresInvalid.get(iStat.index)}" min="0"
+                                           placeholder="Score" class="form-control w-50"/>
+                                </label>
+                                <label th:unless="${#fields.hasErrors('beginningDateTime')}">
+                                    <span th:if="${iStat.index < game.gameResultList.size}">
+                                        <input type="number" name="teamsScores"
+                                               th:value="${game.gameResultList.get(iStat.index).teamScore}" min="0"
+                                               placeholder="Score" class="form-control w-50"/>
+                                    </span>
+                                    <span th:unless="${iStat.index < game.gameResultList.size}">
+                                        <input type="number" name="teamsScores" min="0" placeholder="Score"
+                                               class="form-control w-50"/>
+                                    </span>
+                                </label>
+                            </td>
+                        </tr>
+                    </table>
+                    <label>
+                        <select th:field="*{isOver}" class="form-select">
+                            <option value="0" selected="selected">Isn't over</option>
+                            <option value="1">Is over</option>
+                        </select>
+                    </label>
+                    <br>
+                    <button type="submit" value="updateGame" class="btn btn-success mt-3">Update</button>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div th:unless="${game != null}">
+        <h1>There is no such game</h1>
+    </div>
+</div>
+</body>
+</html>

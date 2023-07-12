@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Games</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="#">Sports competitions scheduler</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo02"
+                aria-controls="navbarTogglerDemo02" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarTogglerDemo02">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" th:href="@{/games}">Games</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link active" aria-current="page" th:href="@{/teams}">Teams</a>
+                </li>
+            </ul>
+            <form class="d-flex" role="search" th:action="@{/games/byTeamName}" th:method="GET">
+                <input class="form-control me-2" type="text" name="keyword" th:value="${keyword}"
+                       placeholder="Search by team name" aria-label="Search">
+                <button class="btn btn-outline-light" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-auto mt-3">
+            <div class="mb-3">
+                <h1>All games</h1>
+            </div>
+            <div class="mb-3">
+                <div th:if="${allTeams.size() < minTeamsAmount}">
+                    <h3>Impossible to create a game due to a small number of teams not exceeding <span
+                            th:text="${minTeamsAmount - 1}"></span>
+                    </h3>
+                </div>
+                <div th:unless="${allTeams.size() < minTeamsAmount}">
+                    <form th:action="@{/games/create}" th:method="GET">
+                        <label>
+                        <span th:if="${allTeams.size() < maxTeamsAmount}">
+                            <input type="number" name="teamsAmount" th:value="${minTeamsAmount}"
+                                   th:min="${minTeamsAmount}"
+                                   th:max="${allTeams.size()}" class="form-control">
+                        </span>
+                            <span th:unless="${allTeams.size() < maxTeamsAmount}">
+                            <input type="number" name="teamsAmount" th:value="${minTeamsAmount}"
+                                   th:min="${minTeamsAmount}"
+                                   th:max="${maxTeamsAmount}" class="form-control">
+                        </span>
+                        </label>
+                        <button type="submit" class="btn btn-success">Create</button>
+                    </form>
+                </div>
+            </div>
+            <div th:if="${!allGames.isEmpty()}">
+                <table class="table table-dark table-striped table-bordered w-auto">
+                    <tbody>
+                    <tr>
+                        <th>№</th>
+                        <th>Teams</th>
+                        <th>Score</th>
+                        <th>Date</th>
+                        <th>Time</th>
+                        <th colspan="2">Actions</th>
+                    </tr>
+                    <tr th:each="game : ${allGames}">
+                        <td>
+                            <span th:text="${gameStat.index + 1}"></span>
+                        </td>
+                        <td>
+                            <span th:each="gameResult : ${game.gameResultList}">
+                                <a th:href="@{/teams/{id}(id=${gameResult.team.id})}">
+                                    <span th:text="${gameResult.team.name}"></span>
+                                </a>
+                                <span th:if="${gameResultStat.index} != ${game.gameResultList.size - 1}">
+                                    -
+                                </span>
+                            </span>
+                        </td>
+                        <td>
+                            <span th:switch="${game.isOver}">
+                                <span th:case="${0}">Isn't over</span>
+                                <span th:case="${1}">
+                                    <span th:each="gameResult : ${game.gameResultList}">
+                                        <span th:text="${gameResult.teamScore}"></span>
+                                        <span th:if="${gameResultStat.index} != ${game.gameResultList.size - 1}">
+                                            :
+                                        </span>
+                                    </span>
+                                </span>
+                            </span>
+                        </td>
+                        <td>
+                            <span th:text="${game.beginningDateTime.toLocalDate()}"></span>
+                        </td>
+                        <td>
+                            <span th:text="${game.beginningDateTime.toLocalTime()}"></span>
+                        </td>
+                        <td>
+                            <form th:action="@{/games/update/{id}(id=${game.id})}" th:method="GET">
+                                <label th:if="${allTeams.size < maxTeamsAmount}">
+                                    <input type="number" name="teamsAmount" th:value="${game.gameResultList.size}"
+                                           th:min="${minTeamsAmount}" th:max="${allTeams.size}" class="form-control">
+                                </label>
+                                <label th:unless="${allTeams.size < maxTeamsAmount}">
+                                    <input type="number" name="teamsAmount" th:value="${game.gameResultList.size}"
+                                           th:min="${minTeamsAmount}" th:max="${maxTeamsAmount}" class="form-control">
+                                </label>
+                                <button type="submit" class="btn btn-primary">Update</button>
+                            </form>
+                        </td>
+                        <td>
+                            <form th:action="@{/games/delete/{id}(id=${game.id})}" th:method="GET">
+                                <button type="submit" class="btn btn-danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div th:unless="${!allGames.isEmpty()}">
+                <h3>Games list is empty</h3>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
