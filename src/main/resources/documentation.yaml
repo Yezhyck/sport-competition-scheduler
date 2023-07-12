@@ -1,0 +1,519 @@
+openapi: 3.0.1
+info:
+  title: OpenAPI definition
+  version: v0
+servers:
+  - url: http://localhost:8080
+    description: Generated server url
+tags:
+  - name: Team controller
+    description: Controller for teams management
+  - name: Game controller
+    description: Controller for games management
+paths:
+  /teams/update/{id}:
+    put:
+      tags:
+        - Team controller
+      summary: Updating team by id
+      description: "This operation updates an existing team with the specified id.\
+        \ If all of the team parameters and the existing team id are correct, the\
+        \ operation returns a fully updated team along with a success code of 200.\
+        \ If at least one of the team's team parameters is incorrectly formatted,\
+        \ or a non-existent team id is specified, a 400 code is returned. If an error\
+        \ occurs while creating the team, returns 404 code and corresponding message."
+      operationId: update
+      parameters:
+        - name: id
+          in: path
+          description: Team id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+        required: true
+      responses:
+        "200":
+          description: Team updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        "400":
+          description: Invalid id or team parameters supplied
+  /games/update/{id}:
+    put:
+      tags:
+        - Game controller
+      summary: Updating game by id
+      description: "This operation updates an existing game with the specified id.\
+        \ If all of the game parameters and the existing game id are correct, the\
+        \ operation returns a fully updated game along with a success code of 200.\
+        \ If at least one of the game's game parameters is incorrectly formatted,\
+        \ or a non-existent game ID is specified, a 400 code is returned. If an error\
+        \ occurs while creating the game, returns 404 code and corresponding message."
+      operationId: update_1
+      parameters:
+        - name: id
+          in: path
+          description: Game id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Game'
+        required: true
+      responses:
+        "400":
+          description: Invalid id or game parameters supplied
+        "200":
+          description: Game updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+  /teams/create:
+    post:
+      tags:
+        - Team controller
+      summary: Creating team
+      description: "This operation saves a new team by generating a unique team id\
+        \ on the server. If all team parameters are specified correctly, the operation\
+        \ returns the created team in its full form, as well as the operation success\
+        \ code 200. If at least one team parameter is specified in an invalid format,\
+        \ the code 400 is returned."
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Team'
+        required: true
+      responses:
+        "200":
+          description: Team created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        "400":
+          description: Invalid team parameters
+  /games/create:
+    post:
+      tags:
+        - Game controller
+      summary: Creating game
+      description: "This operation saves a new game by generating a unique game id\
+        \ on the server. If all game parameters are specified correctly, the operation\
+        \ returns the created game in its full form, as well as the operation success\
+        \ code 200. If at least one game parameter is specified in an invalid format,\
+        \ the code 400 is returned."
+      operationId: create_1
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Game'
+        required: true
+      responses:
+        "200":
+          description: Game created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        "400":
+          description: Invalid game parameters
+  /teams:
+    get:
+      tags:
+        - Team controller
+      summary: Getting all teams
+      description: "This operation finds existing teams. If the teams exist, the operation\
+        \ returns a list of all existing teams along with a success code of 200. If\
+        \ all teams are missing, the return code is 404."
+      operationId: readAll
+      responses:
+        "200":
+          description: Teams found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+  /teams/{id}:
+    get:
+      tags:
+        - Team controller
+      summary: Getting team by id
+      description: "This operation finds an existing team with the given id. If the\
+        \ team exists, the operation returns the complete team along with a success\
+        \ code of 200. If the identifier is not well-formed, the return code is 400.\
+        \ If a team identifier that does not exist, a 404 code and a corresponding\
+        \ message are returned."
+      operationId: read
+      parameters:
+        - name: id
+          in: path
+          description: Team id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Team found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Team'
+        "400":
+          description: Invalid id supplied
+        "404":
+          description: Team not found
+  /teams/page/{page}:
+    get:
+      tags:
+        - Team controller
+      summary: Getting teams by page number
+      description: "This operation provides a fixed size list o existing teams according\
+        \ to the specified page number. If the specified page number is in the correct\
+        \ format, the operation returns a fixed-size list of existing teams according\
+        \ to the specified page number, along with success code 200. If the page number\
+        \ is not in the correct format, the function returns code 400."
+      operationId: readAllByPage
+      parameters:
+        - name: page
+          in: path
+          description: Page number
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Teams found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+        "400":
+          description: Invalid page number supplied
+  /teams/page/{page}/size/{size}:
+    get:
+      tags:
+        - Team controller
+      summary: Getting teams by page number and size
+      description: "This operation provides a list of existing teams of the specified\
+        \ size, according to the specified page number. If the specified page number\
+        \ and size are in the correct format, the operation returns a list of existing\
+        \ teams of the specified size, according to the specified page number, along\
+        \ with success code 200. If the page number or size is not in the correct\
+        \ format, the function returns code 400."
+      operationId: readAllByPageAndSize
+      parameters:
+        - name: page
+          in: path
+          description: Page number
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: size
+          in: path
+          description: Page size
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Teams found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+        "400":
+          description: Invalid page number or size supplied
+  /teams/name/{name}:
+    get:
+      tags:
+        - Team controller
+      summary: Getting teams by team name
+      description: "This operation finds all existing teams whose whose names match\
+        \ or match the specified team name. If at least one such team exists and the\
+        \ team name is in the correct format, the operation returns the corresponding\
+        \ list of complete teams along with a success code of 200."
+      operationId: readAllByName
+      parameters:
+        - name: name
+          in: path
+          description: Team name or part of the team name
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Teams found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Team'
+  /games:
+    get:
+      tags:
+        - Game controller
+      summary: Getting all games
+      description: "This operation finds existing games. If the games exist, the operation\
+        \ returns a list of all existing games along with a success code of 200. If\
+        \ all games are missing, the return code is 404."
+      operationId: readAll_1
+      responses:
+        "200":
+          description: Games found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+  /games/{id}:
+    get:
+      tags:
+        - Game controller
+      summary: Getting game by id
+      description: "This operation finds an existing game with the given id. If the\
+        \ game exists, the operation returns the complete game along with a success\
+        \ code of 200. If the identifier is not well-formed, the return code is 400.\
+        \ If a game identifier that does not exist, a 404 code and a corresponding\
+        \ message are returned."
+      operationId: read_1
+      parameters:
+        - name: id
+          in: path
+          description: Game id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Game found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Game'
+        "404":
+          description: Game not found
+        "400":
+          description: Invalid id supplied
+  /games/team-name/{teamName}:
+    get:
+      tags:
+        - Game controller
+      summary: Getting games by team name
+      description: "This operation finds all existing games that have teams whose\
+        \ names match or match the specified team name. If at least one such game\
+        \ exists and the team name is in the correct format, the operation returns\
+        \ the corresponding list of complete games along with a success code of 200."
+      operationId: readAllByTeamName
+      parameters:
+        - name: teamName
+          in: path
+          description: Team name or part of the team name
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Games found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+  /games/page/{page}:
+    get:
+      tags:
+        - Game controller
+      summary: Getting games by page number
+      description: "This operation provides a fixed size list o  existing games according\
+        \ to the specified page number. If the specified page number is in the correct\
+        \ format, the operation returns a fixed-size list of existing games according\
+        \ to the specified page number, along with success code 200. If the page number\
+        \ is not in the correct format, the function returns code 400."
+      operationId: findAllByPage
+      parameters:
+        - name: page
+          in: path
+          description: Page number
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Games found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+        "400":
+          description: Invalid page number supplied
+  /games/page/{page}/size/{size}:
+    get:
+      tags:
+        - Game controller
+      summary: Getting games by page number and size
+      description: "This operation provides a list of existing games of the specified\
+        \ size, according to the specified page number. If the specified page number\
+        \ and size are in the correct format, the operation returns a list of existing\
+        \ games of the specified size, according to the specified page number, along\
+        \ with success code 200. If the page number or size is not in the correct\
+        \ format, the function returns code 400."
+      operationId: findAllByPageAndSize
+      parameters:
+        - name: page
+          in: path
+          description: Page number
+          required: true
+          schema:
+            type: integer
+            format: int64
+        - name: size
+          in: path
+          description: Page size
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Games found
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Game'
+        "400":
+          description: Invalid page number or size supplied
+  /teams/delete/{id}:
+    delete:
+      tags:
+        - Team controller
+      summary: Deleting team by id
+      description: "This operation deletes the existing team by the specified id.\
+        \ If an existing team id is specified in the correct format, the operation\
+        \ returns a success code of 200. If a non-existent team id is specified and\
+        \ it is not in the correct format, a 400 code is returned."
+      operationId: delete
+      parameters:
+        - name: id
+          in: path
+          description: Team id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Team deleted
+        "400":
+          description: Invalid id supplied
+  /games/delete/{id}:
+    delete:
+      tags:
+        - Game controller
+      summary: Deleting game by id
+      description: "This operation deletes the existing game by the specified id.\
+        \ If an existing game id is specified in the correct format, the operation\
+        \ returns a success code of 200. If a non-existent game id is specified and\
+        \ it is not in the correct format, a 400 code is returned."
+      operationId: delete_1
+      parameters:
+        - name: id
+          in: path
+          description: Game id
+          required: true
+          schema:
+            type: integer
+            format: int64
+      responses:
+        "200":
+          description: Game deleted
+        "400":
+          description: Invalid id supplied
+components:
+  schemas:
+    Game:
+      required:
+        - beginningDateTime
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        beginningDateTime:
+          type: string
+          format: date-time
+        isOver:
+          maximum: 1
+          minimum: 0
+          type: integer
+          format: int32
+        gameResultList:
+          type: array
+          items:
+            $ref: '#/components/schemas/GameResult'
+    GameResult:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        gameId:
+          type: integer
+          format: int64
+        teamId:
+          type: integer
+          format: int64
+        teamScore:
+          type: integer
+          format: int64
+        team:
+          $ref: '#/components/schemas/Team'
+        game:
+          $ref: '#/components/schemas/Game'
+    Team:
+      required:
+        - name
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        name:
+          maxLength: 18
+          minLength: 3
+          type: string
+
